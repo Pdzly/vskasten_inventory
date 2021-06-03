@@ -17,7 +17,7 @@ SWEP.ShouldDropOnDie = false
 SWEP.Primary.Ammo = "none"
 SWEP.Primary.ClipSize = -1
 SWEP.Primary.DefaultClip = -1
-SWEP.Primary.Automatic = false
+SWEP.Primary.Automatic = true
 
 SWEP.Secondary.Ammo = "none"
 SWEP.Secondary.ClipSize = -1
@@ -33,11 +33,10 @@ function SWEP:ShouldDrawViewModel()
 end
 
 function SWEP:PrimaryAttack()
-	local tr = self.Owner:GetEyeTrace().Entity
-	if self.Owner:EyePos():DistToSqr(tr:GetPos()) > 10000 then return end
+	local tr = self:GetOwner():GetEyeTrace().Entity
+	if self:GetOwner():EyePos():DistToSqr(tr:GetPos()) > 15000 then return end
 	if SERVER then
-		self.Owner:AddItemToPlayerInv(tr, self.Owner)
-		tr:Remove()
+		self:GetOwner():AddItemToPlayerInv(tr)
 	end
 end
 
@@ -45,6 +44,7 @@ function SWEP:SecondaryAttack()
 	if SERVER then
 		net.Start("openInvMenu")
 		net.WriteBool(true)
-		net.Send(self.Owner)
+		net.Send(self:GetOwner())
+		self:GetOwner():SpawnItemFromInv()
 	end
 end
